@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Casa Levy Delivery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#0E0E0E;
+  --dark:#1A1A1A;
+  --mid:#555;
+  --light:#888;
+  --border:#E0E0E0;
+  --surface:#F6F6F6;
+  --white:#FFFFFF;
+  --green:#25D366;
+}
+body{background:var(--surface);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;justify-content:center;padding:0 0 40px}
+.app{width:100%;max-width:430px;background:var(--white);min-height:100vh;position:relative}
+.screen{display:none}.screen.active{display:block}
+
+.header{background:var(--black);padding:20px 18px 16px}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.header h1{font-family:'Playfair Display',serif;font-size:20px;font-weight:500;color:#fff;letter-spacing:-.2px}
+.header-dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+.header p{font-size:11px;color:#555;letter-spacing:.5px;text-transform:uppercase;font-weight:300}
+
+.search-bar{padding:14px 18px;border-bottom:0.5px solid var(--border);background:var(--white)}
+.search-wrap{position:relative}
+.search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;stroke:#aaa;fill:none;stroke-width:2;stroke-linecap:round}
+.search-bar input{width:100%;background:var(--surface);border:0.5px solid var(--border);border-radius:8px;padding:9px 12px 9px 38px;font-size:14px;color:var(--black);outline:none;font-family:'DM Sans',sans-serif}
+.search-bar input::placeholder{color:#bbb}
+
+.cat-filter{display:flex;gap:6px;padding:12px 18px;overflow-x:auto;border-bottom:0.5px solid var(--border);scrollbar-width:none;background:var(--white)}
+.cat-filter::-webkit-scrollbar{display:none}
+.cat-btn{white-space:nowrap;font-size:10px;font-weight:500;padding:5px 14px;border-radius:20px;border:0.5px solid var(--border);background:var(--white);color:var(--mid);cursor:pointer;letter-spacing:.5px;text-transform:uppercase;font-family:'DM Sans',sans-serif;transition:all .2s}
+.cat-btn.active{background:var(--black);color:#fff;border-color:var(--black)}
+
+.product-list{padding:14px 18px;display:flex;flex-direction:column;gap:8px}
+.section-title{font-size:10px;font-weight:500;color:#bbb;padding:10px 0 4px;text-transform:uppercase;letter-spacing:1.5px;font-family:'DM Sans',sans-serif}
+
+.product-card{background:var(--white);border:0.5px solid var(--border);border-radius:10px;padding:16px;cursor:pointer;transition:border-color .2s,transform .1s}
+.product-card:hover{border-color:var(--black);transform:translateY(-1px)}
+.product-card:active{transform:translateY(0)}
+.line-badge{display:inline-block;font-size:9px;font-weight:500;padding:2px 8px;border-radius:3px;margin-bottom:7px;text-transform:uppercase;letter-spacing:.5px;border:0.5px solid var(--border);color:#aaa;background:var(--surface)}
+.product-name{font-family:'Playfair Display',serif;font-size:16px;font-weight:500;color:var(--black);margin-bottom:3px;line-height:1.3}
+.product-sub{font-size:11px;color:var(--light);margin-bottom:7px;line-height:1.4;font-weight:300}
+.product-desc{font-size:12px;color:var(--mid);line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.price-from{font-size:11px;color:var(--light);margin-top:10px;display:flex;align-items:center;gap:6px}
+.price-from::before{content:'';display:block;width:16px;height:0.5px;background:var(--border)}
+.price-from span{color:var(--black);font-weight:500;font-size:13px}
+
+.detail-body{padding:22px 18px}
+.back-row{display:flex;align-items:center;gap:8px;margin-bottom:20px;cursor:pointer}
+.back-row svg{width:18px;height:18px;stroke:var(--mid);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.back-row span{font-size:12px;color:var(--mid);letter-spacing:.3px;text-transform:uppercase}
+.detail-line{margin-bottom:10px}
+.detail-name{font-family:'Playfair Display',serif;font-size:26px;font-weight:400;color:var(--black);margin-bottom:5px;letter-spacing:-.3px;line-height:1.2}
+.detail-sub{font-size:12px;color:var(--light);margin-bottom:16px;font-weight:300;line-height:1.5}
+.detail-desc{font-size:13px;color:var(--mid);line-height:1.8;margin-bottom:14px;padding-bottom:14px;border-bottom:0.5px solid var(--border)}
+.nutr-toggle{font-size:10px;color:var(--light);cursor:pointer;margin-bottom:10px;display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.5px;transition:color .2s}
+.nutr-toggle:hover{color:var(--mid)}
+.nutr-toggle svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;flex-shrink:0}
+.nutr-box{background:var(--surface);border-radius:8px;padding:12px 14px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.nutr-item{font-size:11px;color:var(--light);font-weight:300}
+.nutr-item span{color:var(--black);font-weight:500;display:block;font-size:13px;margin-top:1px}
+.variations-label{font-size:10px;font-weight:500;color:#bbb;margin-bottom:10px;text-transform:uppercase;letter-spacing:1px}
+.variation-row{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--surface);border-radius:8px;margin-bottom:6px;cursor:pointer;border:0.5px solid var(--border);transition:all .2s}
+.variation-row:hover{border-color:#aaa}
+.variation-row.selected{border-color:var(--black);background:var(--white)}
+.variation-size{font-size:13px;color:var(--black);font-weight:400}
+.variation-note{font-size:10px;color:var(--light);margin-top:2px;text-transform:uppercase;letter-spacing:.4px;font-weight:300}
+.variation-price{font-size:15px;font-weight:500;color:var(--black);font-family:'Playfair Display',serif}
+.whatsapp-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:15px;background:var(--green);border:none;border-radius:8px;color:#fff;font-size:14px;font-weight:500;cursor:pointer;margin-top:16px;text-decoration:none;letter-spacing:.3px;font-family:'DM Sans',sans-serif;transition:opacity .2s}
+.whatsapp-btn:hover{opacity:.9}
+.whatsapp-btn svg{width:20px;height:20px;fill:#fff;flex-shrink:0}
+.empty-state{text-align:center;padding:50px 18px;color:var(--light);font-size:13px}
+
+@media(max-width:430px){body{padding:0}}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div id="screen-home" class="screen active">
+  <div class="header">
+    <div class="header-top">
+      <h1>Casa Levy Delivery</h1>
+      <div class="header-dot"></div>
+    </div>
+    <p>Belo Horizonte · Peça pelo WhatsApp</p>
+  </div>
+  <div class="search-bar">
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="search-input" placeholder="Buscar no cardápio..." oninput="filterProducts()">
+    </div>
+  </div>
+  <div class="cat-filter" id="cat-filter"></div>
+  <div class="product-list" id="product-list"></div>
+</div>
+
+<div id="screen-detail" class="screen">
+  <div class="detail-body">
+    <div class="back-row" onclick="goHome()">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      <span>Cardápio</span>
+    </div>
+    <div class="detail-line" id="detail-badge"></div>
+    <div class="detail-name" id="detail-name"></div>
+    <div class="detail-sub" id="detail-sub"></div>
+    <div class="detail-desc" id="detail-desc"></div>
+    <div class="nutr-toggle" onclick="toggleNutr()">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span id="nutr-toggle-label">Informações nutricionais (500ml)</span>
+    </div>
+    <div class="nutr-box" id="nutr-box" style="display:none"></div>
+    <div class="variations-label">Escolha o tamanho</div>
+    <div id="variations-list"></div>
+    <a class="whatsapp-btn" href="#" onclick="return handleWhatsApp(event)">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.115.554 4.103 1.523 5.828L.057 23.428a.5.5 0 0 0 .609.61l5.7-1.476A11.95 11.95 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.7-.515-5.243-1.414l-.375-.222-3.884 1.006 1.03-3.77-.245-.39A9.96 9.96 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+      Pedir pelo WhatsApp
+    </a>
+  </div>
+</div>
+
+</div>
+
+<script>
+const WHATSAPP_NUMBER="5531991346157";
+
+const produtos=[
+  {id:1,nome:"Feijoadinha Levi",sub:"Feijão Preto, Laranja, Lombo e Bacon",linha:"Tradicional",
+   descricao:"Creme aveludado de feijão preto com notas naturais de laranja, lombo suíno desfiado, bacon crocante e couve fresca. Finalizado com o exclusivo Azeite de Laranja Levi.",
+   nutr:{kcal:470,prot:31,carb:60,gord:12,fibras:15,sodio:790}},
+  {id:2,nome:"Caldo Caipira da Fazenda",sub:"Feijão Carioca e Carne Seca Desfiada",linha:"Tradicional",
+   descricao:"O sabor da cozinha mineira em sua essência. Feijão carioca cremoso com alho, cebola, colorau e cheiro-verde, servido com generosa porção de carne seca desfiada.",
+   nutr:{kcal:430,prot:30,carb:58,gord:8,fibras:14,sodio:840}},
+  {id:3,nome:"Creme Sertanejo de Mandioca",sub:"Mandioca Cremosa e Frango ao Requeijão",linha:"Especial",
+   descricao:"Creme encorpado de mandioca com textura extremamente cremosa, servido com frango desfiado envolvido em requeijão e finalizado com alho crocante dourado.",
+   nutr:{kcal:510,prot:26,carb:78,gord:12,fibras:8,sodio:710}},
+  {id:4,nome:"Cassoulet Mineiro",sub:"Feijão Branco e Frango Cremoso",linha:"Especial",
+   descricao:"Inspirado nos clássicos cozidos europeus — feijão branco cremoso, cenouras delicadamente cozidas, ervas aromáticas e frango desfiado cremoso.",
+   nutr:{kcal:385,prot:28,carb:48,gord:7,fibras:11,sodio:620}},
+  {id:5,nome:"Velouté Cabotiá da Serra",sub:"Abóbora Cabotiá e Carne de Panela",linha:"Gourmet",
+   descricao:"Creme delicado de abóbora cabotiá finalizado com cream cheese, servido com carne de panela desfiada e redução de balsâmico envelhecido.",
+   nutr:{kcal:390,prot:25,carb:32,gord:17,fibras:6,sodio:650}},
+  {id:6,nome:"Creme Mineiro de Baroa",sub:"Mandioquinha, Parmesão e Carne Seca",linha:"Gourmet",
+   descricao:"Creme sedoso de batata baroa enriquecido com parmesão e carne seca desfiada. Finalizado com um delicado toque de azeite trufado.",
+   nutr:{kcal:420,prot:24,carb:52,gord:13,fibras:6,sodio:820}},
+];
+
+const variacoes=[
+  {id:1,id_produto:1,tamanho:"500ml",nota:"Econômico",preco:24.90},
+  {id:2,id_produto:1,tamanho:"500ml",nota:"Ideal",preco:27.90},
+  {id:3,id_produto:1,tamanho:"500ml",nota:"Premium",preco:29.90},
+  {id:4,id_produto:2,tamanho:"500ml",nota:"Econômico",preco:25.90},
+  {id:5,id_produto:2,tamanho:"500ml",nota:"Ideal",preco:28.90},
+  {id:6,id_produto:2,tamanho:"500ml",nota:"Premium",preco:31.90},
+  {id:7,id_produto:3,tamanho:"500ml",nota:"Econômico",preco:23.90},
+  {id:8,id_produto:3,tamanho:"500ml",nota:"Ideal",preco:26.90},
+  {id:9,id_produto:3,tamanho:"500ml",nota:"Premium",preco:28.90},
+  {id:10,id_produto:4,tamanho:"500ml",nota:"Econômico",preco:24.90},
+  {id:11,id_produto:4,tamanho:"500ml",nota:"Ideal",preco:27.90},
+  {id:12,id_produto:4,tamanho:"500ml",nota:"Premium",preco:29.90},
+  {id:13,id_produto:5,tamanho:"500ml",nota:"Econômico",preco:27.90},
+  {id:14,id_produto:5,tamanho:"500ml",nota:"Ideal",preco:30.90},
+  {id:15,id_produto:5,tamanho:"500ml",nota:"Premium",preco:32.90},
+  {id:16,id_produto:6,tamanho:"500ml",nota:"Econômico",preco:29.90},
+  {id:17,id_produto:6,tamanho:"500ml",nota:"Ideal",preco:32.90},
+  {id:18,id_produto:6,tamanho:"500ml",nota:"Premium",preco:34.90},
+];
+
+let currentProduct=null,selectedVariacao=null,activeCategory="Todos",nutrVisible=false;
+
+function formatPrice(v){return"R$ "+v.toFixed(2).replace(".",",")}
+function minPrice(id){const v=variacoes.filter(v=>v.id_produto===id);return v.length?Math.min(...v.map(v=>v.preco)):null}
+
+function renderCategories(){
+  document.getElementById("cat-filter").innerHTML=
+    ["Todos","Tradicional","Especial","Gourmet"].map(c=>
+      `<button class="cat-btn${c===activeCategory?" active":""}" onclick="setCategory('${c}')">${c}</button>`
+    ).join("");
+}
+function setCategory(c){activeCategory=c;renderCategories();filterProducts()}
+function filterProducts(){
+  const q=document.getElementById("search-input").value.toLowerCase();
+  renderProducts(produtos.filter(p=>
+    (activeCategory==="Todos"||p.linha===activeCategory)&&
+    (p.nome.toLowerCase().includes(q)||p.sub.toLowerCase().includes(q)||p.descricao.toLowerCase().includes(q))
+  ));
+}
+function renderProducts(list){
+  const el=document.getElementById("product-list");
+  if(!list.length){el.innerHTML=`<div class="empty-state">Nenhum produto encontrado</div>`;return}
+  const by={};list.forEach(p=>{if(!by[p.linha])by[p.linha]=[];by[p.linha].push(p)});
+  let html="";
+  ["Tradicional","Especial","Gourmet"].forEach(linha=>{
+    if(!by[linha])return;
+    html+=`<div class="section-title">${linha}</div>`;
+    by[linha].forEach(p=>{
+      const min=minPrice(p.id);
+      html+=`<div class="product-card" onclick="openDetail(${p.id})">
+        <span class="line-badge">${linha}</span>
+        <div class="product-name">${p.nome}</div>
+        <div class="product-sub">${p.sub}</div>
+        <div class="product-desc">${p.descricao}</div>
+        ${min!==null?`<div class="price-from">A partir de <span>${formatPrice(min)}</span></div>`:""}
+      </div>`;
+    });
+  });
+  el.innerHTML=html;
+}
+function toggleNutr(){
+  nutrVisible=!nutrVisible;
+  document.getElementById("nutr-box").style.display=nutrVisible?"grid":"none";
+  document.getElementById("nutr-toggle-label").textContent=nutrVisible?"Ocultar informações nutricionais":"Informações nutricionais (500ml)";
+}
+function openDetail(prodId){
+  currentProduct=produtos.find(p=>p.id===prodId);
+  selectedVariacao=null;nutrVisible=false;
+  const vars=variacoes.filter(v=>v.id_produto===prodId);
+  document.getElementById("detail-badge").innerHTML=`<span class="line-badge">${currentProduct.linha}</span>`;
+  document.getElementById("detail-name").textContent=currentProduct.nome;
+  document.getElementById("detail-sub").textContent=currentProduct.sub;
+  document.getElementById("detail-desc").textContent=currentProduct.descricao;
+  document.getElementById("nutr-box").style.display="none";
+  document.getElementById("nutr-toggle-label").textContent="Informações nutricionais (500ml)";
+  const n=currentProduct.nutr;
+  document.getElementById("nutr-box").innerHTML=`
+    <div class="nutr-item">Calorias<span>${n.kcal} kcal</span></div>
+    <div class="nutr-item">Proteínas<span>${n.prot}g</span></div>
+    <div class="nutr-item">Carboidratos<span>${n.carb}g</span></div>
+    <div class="nutr-item">Gorduras<span>${n.gord}g</span></div>
+    <div class="nutr-item">Fibras<span>${n.fibras}g</span></div>
+    <div class="nutr-item">Sódio<span>${n.sodio}mg</span></div>`;
+  document.getElementById("variations-list").innerHTML=vars.map(v=>`
+    <div class="variation-row" id="var-${v.id}" onclick="selectVariacao(${v.id})">
+      <div><div class="variation-size">${v.tamanho}</div><div class="variation-note">${v.nota}</div></div>
+      <span class="variation-price">${formatPrice(v.preco)}</span>
+    </div>`).join("");
+  document.getElementById("screen-home").classList.remove("active");
+  document.getElementById("screen-detail").classList.add("active");
+  window.scrollTo(0,0);
+}
+function selectVariacao(varId){
+  selectedVariacao=variacoes.find(v=>v.id===varId);
+  document.querySelectorAll(".variation-row").forEach(el=>el.classList.remove("selected"));
+  const el=document.getElementById("var-"+varId);if(el)el.classList.add("selected");
+}
+function goHome(){
+  document.getElementById("screen-detail").classList.remove("active");
+  document.getElementById("screen-home").classList.add("active");
+  window.scrollTo(0,0);
+}
+function handleWhatsApp(e){
+  e.preventDefault();if(!currentProduct)return false;
+  let msg=`Olá! Gostaria de fazer o pedido de: ${currentProduct.nome}`;
+  if(selectedVariacao)msg+=` — ${selectedVariacao.tamanho} · ${selectedVariacao.nota} (${formatPrice(selectedVariacao.preco)})`;
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`,'_blank');
+  return false;
+}
+renderCategories();filterProducts();
+</script>
+</body>
+</html>
