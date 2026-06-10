@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>DNA do Sabor — Casa Levi</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0A0A0A;
+  --paper:#F7F4EE;
+  --gold:#C9A84C;
+  --gold-dim:#8A6E30;
+  --ash:#2A2A2A;
+  --smoke:#3D3D3D;
+  --mist:#6B6B6B;
+  --fog:#9A9A9A;
+  --line:#2A2A2A;
+  --white:#FFFFFF;
+  --red:#C0392B;
+  --green:#25D366;
+}
+html,body{height:100%;background:var(--ink);color:var(--paper);font-family:"DM Sans",sans-serif;overflow-x:hidden}
+.app{max-width:480px;margin:0 auto;min-height:100vh;position:relative}
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.active{display:flex}
+
+/* ── TELA 1: BOAS-VINDAS ── */
+#s-welcome{justify-content:space-between;padding:0}
+.wlc-top{padding:48px 28px 0;flex:1;display:flex;flex-direction:column;justify-content:center}
+.wlc-eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:24px;font-weight:400}
+.wlc-title{font-family:"Cormorant Garamond",serif;font-size:52px;font-weight:300;line-height:1.05;color:var(--paper);margin-bottom:16px;letter-spacing:-.5px}
+.wlc-title em{font-style:italic;color:var(--gold)}
+.wlc-desc{font-size:13px;color:var(--fog);line-height:1.8;max-width:320px;font-weight:300;margin-bottom:40px}
+.wlc-bottom{padding:28px;border-top:1px solid var(--line)}
+.wlc-form{display:flex;flex-direction:column;gap:14px;margin-bottom:20px}
+.form-field{display:flex;flex-direction:column;gap:6px}
+.form-field label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--mist);font-weight:400}
+.form-field input{background:var(--ash);border:1px solid var(--smoke);border-radius:4px;padding:12px 14px;font-size:14px;color:var(--paper);outline:none;font-family:"DM Sans",sans-serif;transition:border-color .2s}
+.form-field input::placeholder{color:var(--smoke)}
+.form-field input:focus{border-color:var(--gold)}
+.btn-primary{width:100%;padding:15px;background:var(--gold);border:none;border-radius:4px;color:var(--ink);font-size:13px;font-weight:500;cursor:pointer;letter-spacing:1.5px;text-transform:uppercase;font-family:"DM Sans",sans-serif;transition:opacity .2s}
+.btn-primary:hover{opacity:.88}
+
+/* ── TELA 2: QUIZ ── */
+#s-quiz{padding:0}
+.quiz-header{padding:24px 28px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.quiz-step{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--mist)}
+.quiz-step span{color:var(--gold)}
+.quiz-progress{width:120px;height:1px;background:var(--smoke);position:relative}
+.quiz-progress-fill{height:100%;background:var(--gold);transition:width .4s ease}
+.quiz-body{flex:1;padding:28px;display:flex;flex-direction:column}
+.quiz-category{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-dim);margin-bottom:12px;font-weight:400}
+.quiz-question{font-family:"Cormorant Garamond",serif;font-size:26px;font-weight:300;color:var(--paper);line-height:1.25;margin-bottom:28px;letter-spacing:-.2px}
+.quiz-choices{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1}
+.choice-card{background:var(--ash);border:1px solid var(--smoke);border-radius:8px;padding:18px 14px;cursor:pointer;display:flex;flex-direction:column;gap:10px;transition:all .2s;position:relative;overflow:hidden}
+.choice-card:hover{border-color:var(--gold);transform:translateY(-2px)}
+.choice-card:active{transform:translateY(0)}
+.choice-card.selected{border-color:var(--gold);background:rgba(201,168,76,.08)}
+.choice-emoji{font-size:32px;display:block}
+.choice-label{font-size:12px;color:var(--paper);line-height:1.4;font-weight:400}
+.choice-sub{font-size:10px;color:var(--mist);line-height:1.4;font-weight:300}
+.choice-letter{position:absolute;top:10px;right:12px;font-size:9px;letter-spacing:1px;color:var(--smoke);text-transform:uppercase}
+
+/* ── TELA 3: LOADING ── */
+#s-loading{justify-content:center;align-items:center;gap:32px;padding:40px}
+.loading-icon{width:80px;height:80px;position:relative;margin:0 auto}
+.loading-ring{width:80px;height:80px;border-radius:50%;border:1px solid var(--smoke);border-top-color:var(--gold);animation:spin 1.4s linear infinite;position:absolute}
+.loading-ring:nth-child(2){width:60px;height:60px;top:10px;left:10px;border-top-color:transparent;border-right-color:var(--gold-dim);animation-duration:1s;animation-direction:reverse}
+.loading-text{text-align:center}
+.loading-title{font-family:"Cormorant Garamond",serif;font-size:28px;font-weight:300;color:var(--paper);margin-bottom:10px}
+.loading-sub{font-size:12px;color:var(--fog);line-height:1.7;font-weight:300}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── TELA 4: RESULTADO DO CLIENTE ── */
+#s-result{padding:0}
+.result-hero{padding:40px 28px 32px;background:linear-gradient(160deg,var(--ash) 0%,var(--ink) 100%);border-bottom:1px solid var(--line)}
+.result-eyebrow{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
+.result-name{font-family:"Cormorant Garamond",serif;font-size:36px;font-weight:300;color:var(--paper);margin-bottom:6px;line-height:1.1}
+.result-profile{display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);border-radius:100px;padding:8px 16px;margin-bottom:20px}
+.result-profile-icon{font-size:18px}
+.result-profile-label{font-size:12px;color:var(--gold);font-weight:500;letter-spacing:.5px}
+.result-desc{font-size:13px;color:var(--fog);line-height:1.8;font-weight:300}
+.result-body{padding:24px 28px}
+.result-aromas{margin-bottom:28px}
+.section-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--mist);margin-bottom:16px;font-weight:400}
+.aroma-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.aroma-tag{padding:6px 14px;border-radius:100px;font-size:11px;font-weight:400;letter-spacing:.3px}
+.aroma-tag.high{background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.4);color:var(--gold)}
+.aroma-tag.med{background:rgba(255,255,255,.05);border:1px solid var(--smoke);color:var(--fog)}
+.aroma-tag.low{background:transparent;border:1px solid var(--line);color:var(--smoke)}
+.result-message{background:var(--ash);border:1px solid var(--smoke);border-radius:8px;padding:18px;margin-bottom:24px}
+.result-message p{font-size:13px;color:var(--fog);line-height:1.8;font-weight:300;font-style:italic}
+.share-row{display:flex;gap:10px}
+.btn-share{flex:1;padding:13px;border-radius:4px;font-size:12px;font-weight:500;cursor:pointer;letter-spacing:1px;text-transform:uppercase;font-family:"DM Sans",sans-serif;border:1px solid var(--smoke);background:transparent;color:var(--fog);transition:all .2s}
+.btn-share.wa{background:var(--green);border-color:var(--green);color:#fff}
+.btn-share:hover{border-color:var(--gold);color:var(--gold)}
+.btn-share.wa:hover{opacity:.9;color:#fff}
+
+/* ── TELA 5: DASHBOARD DO CHEF ── */
+#s-chef{padding:0;flex-direction:column}
+.chef-header{padding:20px 28px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.chef-title{font-family:"Cormorant Garamond",serif;font-size:20px;font-weight:400;color:var(--gold);letter-spacing:.3px}
+.chef-subtitle{font-size:10px;color:var(--mist);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.chef-layout{display:flex;flex:1;overflow:hidden}
+.chef-sidebar{width:140px;border-right:1px solid var(--line);overflow-y:auto;flex-shrink:0}
+.client-item{padding:14px 12px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .15s}
+.client-item:hover{background:var(--ash)}
+.client-item.active{background:var(--ash);border-left:2px solid var(--gold)}
+.client-name{font-size:12px;color:var(--paper);font-weight:400;margin-bottom:3px}
+.client-mesa{font-size:10px;color:var(--mist);letter-spacing:.5px}
+.client-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);display:inline-block;margin-right:5px}
+.chef-main{flex:1;overflow-y:auto;padding:20px}
+.chef-section{margin-bottom:24px}
+.chef-section-title{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--mist);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.aroma-bars{display:flex;flex-direction:column;gap:8px}
+.aroma-bar-row{display:flex;align-items:center;gap:10px}
+.aroma-bar-label{font-size:11px;color:var(--fog);width:80px;flex-shrink:0;font-weight:300}
+.aroma-bar-track{flex:1;height:3px;background:var(--smoke);border-radius:2px;overflow:hidden}
+.aroma-bar-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .6s ease}
+.aroma-bar-pct{font-size:10px;color:var(--mist);width:28px;text-align:right}
+.alert-box{background:rgba(192,57,43,.08);border:1px solid rgba(192,57,43,.25);border-radius:6px;padding:14px;display:flex;gap:10px;align-items:flex-start}
+.alert-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.alert-text{font-size:12px;color:var(--fog);line-height:1.7;font-weight:300}
+.alert-text strong{color:rgba(192,57,43,.9);font-weight:500}
+.pairing-tree{display:flex;flex-direction:column;gap:8px}
+.pairing-root{background:var(--ash);border:1px solid var(--gold-dim);border-radius:6px;padding:12px 14px;display:flex;align-items:center;gap:10px}
+.pairing-root-icon{font-size:20px}
+.pairing-root-label{font-size:13px;color:var(--gold);font-weight:500}
+.pairing-root-sub{font-size:10px;color:var(--mist);margin-top:2px}
+.pairing-branches{padding-left:16px;display:flex;flex-direction:column;gap:6px}
+.pairing-branch{background:var(--ash);border:1px solid var(--smoke);border-radius:6px;padding:10px 12px;display:flex;align-items:center;gap:10px;position:relative}
+.pairing-branch::before{content:"";position:absolute;left:-16px;top:50%;width:16px;height:1px;background:var(--smoke)}
+.pairing-branch-icon{font-size:16px}
+.pairing-branch-label{font-size:12px;color:var(--fog);font-weight:300}
+.pairing-branch-note{font-size:10px;color:var(--mist);margin-top:1px}
+.basic-tastes{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.taste-card{background:var(--ash);border:1px solid var(--smoke);border-radius:6px;padding:12px}
+.taste-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mist);margin-bottom:6px}
+.taste-value{font-size:14px;color:var(--paper);font-weight:400}
+.taste-value.high{color:var(--gold)}
+.taste-value.low{color:var(--smoke)}
+
+/* NAVEGAÇÃO FUNDO */
+.nav-bottom{padding:16px 28px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.nav-link{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mist);cursor:pointer;transition:color .2s;background:none;border:none;font-family:"DM Sans",sans-serif}
+.nav-link:hover{color:var(--gold)}
+
+/* UTILITÁRIOS */
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ══ TELA 1: BOAS-VINDAS ══ -->
+<div id="s-welcome" class="screen active">
+  <div class="wlc-top">
+    <div class="wlc-eyebrow">Casa Levi · Confraria do Sabor</div>
+    <h1 class="wlc-title">Descubra o seu<br><em>DNA do Sabor</em></h1>
+    <p class="wlc-desc">12 escolhas visuais. O algoritmo mapeia seus compostos aromáticos dominantes e entrega ao Chef um perfil sensorial personalizado antes do jantar.</p>
+  </div>
+  <div class="wlc-bottom">
+    <div class="wlc-form">
+      <div class="form-field">
+        <label>Seu nome</label>
+        <input type="text" id="inp-nome" placeholder="Como prefere ser chamado">
+      </div>
+      <div class="form-field">
+        <label>E-mail</label>
+        <input type="email" id="inp-email" placeholder="seu@email.com">
+      </div>
+      <div class="form-field">
+        <label>Mesa ou reserva <span style="color:var(--smoke)">(opcional)</span></label>
+        <input type="text" id="inp-mesa" placeholder="Ex: Mesa 4 · Reserva 20h">
+      </div>
+    </div>
+    <button class="btn-primary" onclick="startQuiz()">Iniciar Experiência</button>
+  </div>
+</div>
+
+<!-- ══ TELA 2: QUIZ ══ -->
+<div id="s-quiz" class="screen">
+  <div class="quiz-header">
+    <span class="quiz-step">Escolha <span id="q-num">1</span> de 12</span>
+    <div class="quiz-progress">
+      <div class="quiz-progress-fill" id="q-progress" style="width:8%"></div>
+    </div>
+  </div>
+  <div class="quiz-body">
+    <div class="quiz-category" id="q-category"></div>
+    <div class="quiz-question" id="q-question"></div>
+    <div class="quiz-choices" id="q-choices"></div>
+  </div>
+</div>
+
+<!-- ══ TELA 3: LOADING ══ -->
+<div id="s-loading" class="screen">
+  <div class="loading-icon">
+    <div class="loading-ring"></div>
+    <div class="loading-ring"></div>
+  </div>
+  <div class="loading-text">
+    <div class="loading-title">Decodificando<br>seu paladar</div>
+    <p class="loading-sub">Mapeando compostos voláteis<br>e receptores gustativos&hellip;</p>
+  </div>
+</div>
+
+<!-- ══ TELA 4: RESULTADO ══ -->
+<div id="s-result" class="screen">
+  <div class="result-hero">
+    <div class="result-eyebrow">Seu DNA do Sabor</div>
+    <div class="result-name" id="r-name"></div>
+    <div class="result-profile">
+      <span class="result-profile-icon" id="r-icon"></span>
+      <span class="result-profile-label" id="r-profile"></span>
+    </div>
+    <p class="result-desc" id="r-desc"></p>
+  </div>
+  <div class="result-body">
+    <div class="result-aromas">
+      <div class="section-label">Famílias aromáticas dominantes</div>
+      <div class="aroma-tags" id="r-aromas"></div>
+    </div>
+    <div class="result-message">
+      <p id="r-message"></p>
+    </div>
+    <div class="share-row">
+      <button class="btn-share wa" onclick="shareWhatsApp()">WhatsApp</button>
+      <button class="btn-share" onclick="shareClipboard()">Copiar link</button>
+    </div>
+  </div>
+  <div class="nav-bottom">
+    <button class="nav-link" onclick="restartQuiz()">&larr; Refazer teste</button>
+    <button class="nav-link" onclick="showChef()">Painel do Chef &rarr;</button>
+  </div>
+</div>
+
+<!-- ══ TELA 5: DASHBOARD DO CHEF ══ -->
+<div id="s-chef" class="screen">
+  <div class="chef-header">
+    <div>
+      <div class="chef-title">Painel do Chef</div>
+      <div class="chef-subtitle">Perfis sensoriais · Casa Levi</div>
+    </div>
+    <button class="nav-link" onclick="goResult()">&larr; Voltar</button>
+  </div>
+  <div class="chef-layout">
+    <div class="chef-sidebar" id="chef-sidebar"></div>
+    <div class="chef-main" id="chef-main"></div>
+  </div>
+</div>
+
+</div>
+<script>
+var clienteNome="";
+var clienteEmail="";
+var clienteMesa="";
+var scores={};
+var currentQ=0;
+var WHATSAPP_CHEF="5531991346157";
+
+var perguntas=[
+  {cat:"Cultura",q:"Qual prato desperta mais desejo?",a:{emoji:"🍝",label:"Prato italiano clássico",sub:"Tomate, parmesão e azeite",aromas:["Frutado","Queijo/Lácteo"],gostos:{umami:1,azedo:1}},b:{emoji:"🍛",label:"Prato indiano com especiarias",sub:"Curry, cúrcuma e coentro",aromas:["Picante","Herbal","Vegetal"],gostos:{amargo:1,umami:1}}},
+  {cat:"Amargor",q:"O que você prefere agora?",a:{emoji:"☕",label:"Café expresso puro",sub:"Intenso, sem açúcar",aromas:["Assado","Caramelo"],gostos:{amargo:2}},b:{emoji:"🥔",label:"Purê de batatas cremoso",sub:"Manteiga e creme",aromas:["Queijo/Lácteo","Caramelo"],gostos:{doce:1,umami:1}}},
+  {cat:"Genética — Aldeídos",q:"Como você prefere o taco?",a:{emoji:"🌮",label:"Com muito coentro fresco",sub:"Notas verdes e cítricas",aromas:["Herbal","Verde","Cítrico"],gostos:{azedo:1}},b:{emoji:"🌯",label:"Sem folhas verdes",sub:"Apenas carne e especiarias",aromas:["Picante","Assado","Animal"],gostos:{umami:2,amargo:1}}},
+  {cat:"Umami",q:"Qual opção mais lhe atrai?",a:{emoji:"🍲",label:"Caldo com cogumelos shiitake",sub:"Encorpado e profundo",aromas:["Animal","Vegetal","Assado"],gostos:{umami:3}},b:{emoji:"🍓",label:"Salada de frutas frescas",sub:"Leve e refrescante",aromas:["Frutado","Cítrico","Floral"],gostos:{doce:2,azedo:1}}},
+  {cat:"Reação de Maillard",q:"Qual preparo você prefere?",a:{emoji:"🥩",label:"Bife com crosta dourada",sub:"Grelhado, caramelizado",aromas:["Assado","Animal","Caramelo"],gostos:{umami:2,amargo:1}},b:{emoji:"🍣",label:"Steak tartare cru",sub:"Fresco e delicado",aromas:["Animal","Verde"],gostos:{umami:2,azedo:1}}},
+  {cat:"Terroso — Geosmina",q:"Qual salada você escolhe?",a:{emoji:"🟣",label:"Salada de beterraba",sub:"Terrosa e adocicada",aromas:["Vegetal","Caramelo"],gostos:{doce:1,amargo:1}},b:{emoji:"🥒",label:"Maçã, pepino e limão",sub:"Fresca e crocante",aromas:["Verde","Cítrico","Frutado"],gostos:{doce:1,azedo:2}}},
+  {cat:"Genética — Androstenona",q:"Qual prato você escolheria?",a:{emoji:"🍄",label:"Risoto com trufas e porco",sub:"Intenso e aromático",aromas:["Animal","Amadeirado","Nozes"],gostos:{umami:3,amargo:1}},b:{emoji:"🍋",label:"Frango assado com limão",sub:"Cítrico e delicado",aromas:["Cítrico","Herbal","Assado"],gostos:{azedo:2,umami:1}}},
+  {cat:"Trigeminal",q:"Como você gosta de sentir o prato?",a:{emoji:"🌶️",label:"Prato muito apimentado",sub:"Calor e adrenalina",aromas:["Picante","Vegetal"],gostos:{amargo:1}},b:{emoji:"🌿",label:"Hortelã refrescante",sub:"Frio e aromático",aromas:["Herbal","Verde","Cítrico"],gostos:{azedo:1}}},
+  {cat:"Frutado",q:"Qual sobremesa você deseja?",a:{emoji:"🍑",label:"Sobremesa de pêssego",sub:"Macia, delicada, floral",aromas:["Frutado","Floral","Caramelo"],gostos:{doce:3}},b:{emoji:"🍍",label:"Sobremesa de abacaxi",sub:"Ácida e tropical",aromas:["Frutado","Cítrico"],gostos:{doce:1,azedo:2}}},
+  {cat:"Equilíbrio",q:"Qual harmonização você prefere?",a:{emoji:"🍷",label:"Carne gorda com vinho tânico",sub:"Compostos compartilhados",aromas:["Amadeirado","Animal","Assado"],gostos:{amargo:1,umami:2}},b:{emoji:"🍎",label:"Carne gorda com maçã ácida",sub:"Contraste e equilíbrio",aromas:["Frutado","Cítrico","Azedo"],gostos:{azedo:2,doce:1}}},
+  {cat:"Textura",q:"Qual textura você prefere?",a:{emoji:"🍮",label:"Mousse com crumble crocante",sub:"Contraste de texturas",aromas:["Caramelo","Nozes","Assado"],gostos:{doce:2,amargo:1}},b:{emoji:"🍨",label:"Apenas mousse sedosa",sub:"Pura cremosidade",aromas:["Queijo/Lácteo","Floral","Frutado"],gostos:{doce:3}}},
+  {cat:"Ousadia",q:"Qual combinação te intriga?",a:{emoji:"🫧",label:"Chocolate branco com caviar",sub:"Contraste molecular ousado",aromas:["Queijo/Lácteo","Animal","Amadeirado"],gostos:{salgado:2,doce:1}},b:{emoji:"🍓",label:"Chocolate branco com morango",sub:"Harmonia clássica e frutada",aromas:["Frutado","Floral","Caramelo"],gostos:{doce:3,azedo:1}}}
+];
+
+var mockClients=[
+  {nome:"Ana Paula",mesa:"Mesa 2",scores:{umami:8,doce:4,amargo:2,azedo:3,salgado:1},aromas:{Assado:80,Animal:70,"Caramelo":65,Picante:50,Frutado:20,Vegetal:15},profile:"Alma Tostada & Umami",icon:"🔥",avoidAromas:["Verde","Floral"],pairings:[{icon:"🥩",root:"Contrafilé maturado",sub:"Alta concentração de Maillard"},{icon:"🍫",branch:"Chocolate 85%",note:"Pirazinas compartilhadas"},{icon:"🧄",branch:"Alho negro fermentado",note:"Umami + Caramelo"},{icon:"🌶️",branch:"Pimenta defumada",note:"Amplifica notas tostadas"}]},
+  {nome:"Marcos Viana",mesa:"Reserva 20h",scores:{umami:5,doce:7,amargo:1,azedo:4,salgado:2},aromas:{Frutado:85,"Caramelo":75,Floral:60,Cítrico:55,Assado:30,Animal:10},profile:"Explorador Floral & Doce",icon:"🌸",avoidAromas:["Animal","Vegetal"],pairings:[{icon:"🦆",root:"Pato confitado",sub:"Contraste com perfil floral"},{icon:"🍑",branch:"Pêssego grelhado",note:"Lactonas compartilhadas"},{icon:"🧀",branch:"Queijo de cabra",note:"Ponte floral-láctea"},{icon:"🍯",branch:"Mel de lavanda",note:"Amplifica ésteres florais"}]},
+];
+
+function startQuiz(){
+  var nome=document.getElementById("inp-nome").value.trim();
+  if(!nome){alert("Por favor, informe seu nome.");return;}
+  clienteNome=nome;
+  clienteEmail=document.getElementById("inp-email").value.trim();
+  clienteMesa=document.getElementById("inp-mesa").value.trim();
+  scores={umami:0,doce:0,amargo:0,azedo:0,salgado:0};
+  var aromaKeys=["Frutado","Cítrico","Floral","Verde","Herbal","Vegetal","Caramelo","Assado","Nozes","Amadeirado","Picante","Queijo/Lácteo","Animal","Químico"];
+  aromaKeys.forEach(function(k){scores[k]=0;});
+  currentQ=0;
+  showScreen("s-quiz");
+  renderQuestion();
+}
+
+function renderQuestion(){
+  var q=perguntas[currentQ];
+  document.getElementById("q-num").textContent=currentQ+1;
+  document.getElementById("q-progress").style.width=((currentQ+1)/12*100)+"%";
+  document.getElementById("q-category").textContent=q.cat;
+  document.getElementById("q-question").textContent=q.q;
+  document.getElementById("q-choices").innerHTML=
+    "<div class='choice-card' onclick='choose(\"a\")'><span class='choice-letter'>A</span><span class='choice-emoji'>"+q.a.emoji+"</span><div class='choice-label'>"+q.a.label+"</div><div class='choice-sub'>"+q.a.sub+"</div></div>"+
+    "<div class='choice-card' onclick='choose(\"b\")'><span class='choice-letter'>B</span><span class='choice-emoji'>"+q.b.emoji+"</span><div class='choice-label'>"+q.b.label+"</div><div class='choice-sub'>"+q.b.sub+"</div></div>";
+}
+
+function choose(opt){
+  var q=perguntas[currentQ];
+  var chosen=opt==="a"?q.a:q.b;
+  chosen.aromas.forEach(function(a){if(scores[a]!==undefined)scores[a]+=2;});
+  Object.keys(chosen.gostos).forEach(function(g){scores[g]+=chosen.gostos[g];});
+  currentQ++;
+  if(currentQ>=perguntas.length){showLoading();}
+  else{renderQuestion();}
+}
+
+function showLoading(){
+  showScreen("s-loading");
+  setTimeout(showResult,2800);
+}
+
+function showResult(){
+  var aromaEntries=[];
+  ["Frutado","Cítrico","Floral","Verde","Herbal","Vegetal","Caramelo","Assado","Nozes","Amadeirado","Picante","Queijo/Lácteo","Animal"].forEach(function(k){
+    aromaEntries.push({k:k,v:scores[k]});
+  });
+  aromaEntries.sort(function(a,b){return b.v-a.v;});
+  var top3=aromaEntries.slice(0,3).map(function(x){return x.k;});
+  var bottom=aromaEntries.slice(-3).map(function(x){return x.k;});
+
+  var profile="";var icon="";var desc="";
+  var umami=scores.umami;var doce=scores.doce;var amargo=scores.amargo;
+  if(umami>=top3.indexOf("Assado")!==-1||umami>6){profile="Alma Tostada & Umami";icon="🔥";desc="Seu paladar é atraído por reações de Maillard — notas caramelizadas, tostadas e proteínas intensas. Uma rara combinação de profundidade e poder sensorial.";}
+  else if(doce>umami&&top3.includes("Frutado")){profile="Explorador Floral & Frutado";icon="🌸";desc="Ésteres e lactonas dominam seu mapa aromático. Você percebe nuances florais que outros ignoram — um paladar refinado e sensível ao equilíbrio.";}
+  else if(top3.includes("Picante")||top3.includes("Animal")){profile="Caçador de Contrastes";icon="⚡";desc="Você busca tensão no prato — compostos que contrastam e surpreendem. Seu paladar prefere o inesperado ao confortável, o complexo ao familiar.";}
+  else{profile="Mestre do Equilíbrio";icon="⚖️";desc="Seu perfil valoriza harmonia entre compostos. Você intuitivamente identifica quando um prato está completo — uma habilidade rara e precisa.";}
+
+  document.getElementById("r-name").textContent=clienteNome+",";
+  document.getElementById("r-icon").textContent=icon;
+  document.getElementById("r-profile").textContent=profile;
+  document.getElementById("r-desc").textContent=desc;
+
+  var tagsHtml="";
+  top3.forEach(function(a){tagsHtml+="<span class='aroma-tag high'>"+a+"</span>";});
+  aromaEntries.slice(3,6).forEach(function(x){tagsHtml+="<span class='aroma-tag med'>"+x.k+"</span>";});
+  bottom.forEach(function(a){tagsHtml+="<span class='aroma-tag low'>"+a+"</span>";});
+  document.getElementById("r-aromas").innerHTML=tagsHtml;
+
+  var mesa=clienteMesa?" · "+(clienteMesa):"";
+  document.getElementById("r-message").textContent="O Chef já recebeu seu perfil secreto"+mesa+" e está elaborando uma experiência sensorial personalizada para você.";
+
+  showScreen("s-result");
+  addCurrentClient(aromaEntries,top3,bottom,profile,icon);
+}
+
+var currentClientData=null;
+function addCurrentClient(aromaEntries,top3,bottom,profile,icon){
+  var aromaScores={};
+  aromaEntries.forEach(function(x){aromaScores[x.k]=x.v;});
+  var maxV=aromaEntries[0].v||1;
+  var aromasPct={};
+  aromaEntries.forEach(function(x){aromasPct[x.k]=Math.round(x.v/maxV*100);});
+  currentClientData={
+    nome:clienteNome,
+    mesa:clienteMesa||"Convidado",
+    scores:{umami:scores.umami,doce:scores.doce,amargo:scores.amargo,azedo:scores.azedo,salgado:scores.salgado},
+    aromas:aromasPct,
+    profile:profile,
+    icon:icon,
+    avoidAromas:bottom,
+    pairings:[
+      {icon:"🥩",root:top3[0]==="Assado"||top3[0]==="Animal"?"Lombo de porco confitado":"Frango ao forno com ervas",sub:"Baseado no seu perfil aromático dominante"},
+      {icon:top3[0]==="Frutado"||top3[0]==="Cítrico"?"🍊":"🍫",branch:top3[0]==="Frutado"||top3[0]==="Cítrico"?"Redução de laranja e maracujá":"Chocolate 70% e pimenta",note:"Compostos compartilhados com "+top3[0]},
+      {icon:top3[1]==="Caramelo"||top3[1]==="Assado"?"🧄":"🌿",branch:top3[1]==="Caramelo"||top3[1]==="Assado"?"Alho negro e cebola caramelizada":"Ervas frescas e azeite trufado",note:"Amplifica "+top3[1]},
+      {icon:"🧂",branch:"Sal de finalização especial",note:"Realça todos os compostos identificados"}
+    ]
+  };
+}
+
+function showChef(){
+  renderChefSidebar();
+  renderChefMain(currentClientData||mockClients[0]);
+  showScreen("s-chef");
+}
+
+function renderChefSidebar(){
+  var all=mockClients.slice();
+  if(currentClientData) all.unshift(currentClientData);
+  var html="";
+  all.forEach(function(c,i){
+    html+="<div class='client-item"+(i===0?" active":"")+"' onclick='selectClient("+i+",this)'>";
+    html+="<div class='client-name'><span class='client-dot'></span>"+c.nome+"</div>";
+    html+="<div class='client-mesa'>"+c.mesa+"</div></div>";
+  });
+  document.getElementById("chef-sidebar").innerHTML=html;
+}
+
+function selectClient(idx,el){
+  document.querySelectorAll(".client-item").forEach(function(x){x.classList.remove("active");});
+  el.classList.add("active");
+  var all=mockClients.slice();
+  if(currentClientData) all.unshift(currentClientData);
+  renderChefMain(all[idx]);
+}
+
+function renderChefMain(c){
+  var aromaKeys=Object.keys(c.aromas).sort(function(a,b){return c.aromas[b]-c.aromas[a];});
+  var top5=aromaKeys.slice(0,5);
+  var umami=c.scores.umami;var doce=c.scores.doce;var amargo=c.scores.amargo;var azedo=c.scores.azedo;var salgado=c.scores.salgado;
+
+  var barsHtml="";
+  top5.forEach(function(k){
+    barsHtml+="<div class='aroma-bar-row'><span class='aroma-bar-label'>"+k+"</span><div class='aroma-bar-track'><div class='aroma-bar-fill' style='width:"+c.aromas[k]+"%'></div></div><span class='aroma-bar-pct'>"+c.aromas[k]+"%</span></div>";
+  });
+
+  var tastesHtml="";
+  var tastes=[{l:"Umami",v:umami,max:10},{l:"Doce",v:doce,max:8},{l:"Amargo",v:amargo,max:6},{l:"Azedo",v:azedo,max:7},{l:"Salgado",v:salgado,max:5}];
+  tastes.forEach(function(t){
+    var pct=Math.round(t.v/t.max*100);
+    var cls=pct>=70?"high":pct>=35?"":"low";
+    var label=pct>=70?"Alto":pct>=35?"Médio":"Baixo";
+    tastesHtml+="<div class='taste-card'><div class='taste-label'>"+t.l+"</div><div class='taste-value "+cls+"'>"+label+"</div></div>";
+  });
+
+  var avoidHtml=c.avoidAromas.map(function(a){return "<strong>"+a+"</strong>";}).join(", ");
+
+  var pairHtml="<div class='pairing-root'><span class='pairing-root-icon'>"+c.pairings[0].icon+"</span><div><div class='pairing-root-label'>"+c.pairings[0].root+"</div><div class='pairing-root-sub'>"+c.pairings[0].sub+"</div></div></div><div class='pairing-branches'>";
+  c.pairings.slice(1).forEach(function(p){
+    pairHtml+="<div class='pairing-branch'><span class='pairing-branch-icon'>"+p.icon+"</span><div><div class='pairing-branch-label'>"+p.branch+"</div><div class='pairing-branch-note'>"+p.note+"</div></div></div>";
+  });
+  pairHtml+="</div>";
+
+  document.getElementById("chef-main").innerHTML=
+    "<div class='chef-section'><div class='chef-section-title'>Perfil · "+c.icon+" "+c.profile+"</div><div class='aroma-bars'>"+barsHtml+"</div></div>"+
+    "<div class='chef-section'><div class='chef-section-title'>Gostos básicos</div><div class='basic-tastes'>"+tastesHtml+"</div></div>"+
+    "<div class='chef-section'><div class='chef-section-title'>Lista vermelha — evitar</div><div class='alert-box'><span class='alert-icon'>⚠️</span><div class='alert-text'>Evitar compostos de: "+avoidHtml+". Estes aromas podem causar rejeição inconsciente.</div></div></div>"+
+    "<div class='chef-section'><div class='chef-section-title'>Árvore de foodpairing</div><div class='pairing-tree'>"+pairHtml+"</div></div>";
+}
+
+function goResult(){showScreen("s-result");}
+function restartQuiz(){currentQ=0;showScreen("s-welcome");}
+
+function shareWhatsApp(){
+  var profile=document.getElementById("r-profile").textContent;
+  var msg="Descobri meu DNA do Sabor na Casa Levi: *"+profile+"*\nFaça o seu também: casalevy.com.br/paladar";
+  window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank");
+}
+
+function shareClipboard(){
+  navigator.clipboard&&navigator.clipboard.writeText("casalevy.com.br/paladar").then(function(){alert("Link copiado!");});
+}
+
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(function(s){s.classList.remove("active");});
+  document.getElementById(id).classList.add("active");
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>
